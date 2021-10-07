@@ -1,14 +1,15 @@
 import sys
 import os
+from typing import List
 
 class World:
-    def __init__(self):
+    def __init__(self) -> None:
         self.x = 50
         self.y = 30
-        self.groups = []
-        self.map = []
-        self.summary = []
-        self.turn_log = []
+        self.groups: List = []
+        self.map: List = []
+        self.summary: List = []
+        self.turn_log: List = []
         self.map_corpse_character = "x"
         self.map_nothing_character = "."
 
@@ -33,7 +34,7 @@ class World:
                 winner = l
         return winner
 
-    def generate_map(self):
+    def generate_map(self) -> None:
         self.map = []
         for row in range(self.y + 2):
             r = f"{str(row):>{2}}"
@@ -55,14 +56,15 @@ class World:
                                         r = r + self.map_corpse_character
                                     found = True
                         if found == False:
+                            #TODO fix wrong formatting - x is extending the row
                             r = r + self.map_nothing_character
             self.map.append(r)
 
-    def print_map(self):
+    def print_map(self) -> None:
         for o in self.map:
             print(o)
 
-    def print_start_summary(self):
+    def print_start_summary(self) -> None:
         max_name = 0
         for group in self.groups:
             for member in group.members:
@@ -77,7 +79,7 @@ class World:
                 print(f"{member.name :<{max_name}} - {member.hp} HP, {member.attack_min_range}-{member.attack_max_range} range, {member.attack_min_damage}-{member.attack_max_damage} damage")
             print("-" * 50)
 
-    def print_end_summary(self):
+    def print_end_summary(self) -> None:
         summary = []
         loser = ""
         len_grp = 0
@@ -119,7 +121,7 @@ class World:
         for i in summary:
             print(f"{i['group']:<{len_grp}} | {i['total']:<{len_total}} | {i['alive']:<{len_alive}}")
 
-    def generate_intermediate_summary(self):
+    def generate_intermediate_summary(self) -> None:
         self.generate_map()
         #self.print_map()
         max_name = 0
@@ -146,11 +148,11 @@ class World:
                     c += 1
         self.summary.append("-" * 50)
         
-    def print_intermediate_summary(self):
+    def print_intermediate_summary(self) -> None:
         for s in self.summary:
             print(s)
 
-    def print_intermediate_summary_w_map(self):
+    def print_intermediate_summary_w_map(self) -> None:
         if len(self.map) > len(self.summary):
             for i, m in enumerate(self.map):
                 if i < len(self.summary):
@@ -164,7 +166,7 @@ class World:
                 else:
                     print(" " * (self.x + 2) + s)
 
-    def print_everything(self):
+    def print_everything(self) -> None:
         max_msg_len = 0
         for msg in self.turn_log:
             if max_msg_len < len(msg):
@@ -194,7 +196,7 @@ class World:
             print(f"{tmp_map[i]:<{max_map_len}} {self.summary[i]:<{max_sum_len}} {self.turn_log[i]:<{max_msg_len}}")
         
         
-    def place_units(self):
+    def place_units(self) -> None:
         number_of_groups = len(self.groups)
         rows = int(number_of_groups / 2)
         gid = 0
@@ -234,7 +236,7 @@ class World:
                 unit.y = y_next
                 y_next += 1
 
-    def square_is_valid(self, goto_x, goto_y):
+    def square_is_valid(self, goto_x: int, goto_y: int) -> bool:
         for group in self.groups:
             for member in group.members:
                 if goto_x == member.x and goto_y == member.y:
