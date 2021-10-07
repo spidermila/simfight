@@ -9,11 +9,11 @@ from world import World
 
 def main():
     world = World()
-    group_a = Group("Group A")
-    group_b = Group("Group B")
+    group_a = Group("Group A", map_letter="A")
+    group_b = Group("Group B", map_letter="B")
     world.groups.append(group_a)
     world.groups.append(group_b)
-    for i in range(7):
+    for i in range(8):
         group_a.members.append(Fighter(name="fighter" + str(i + 1), mygroup = group_a, myworld = world))
     for i in range(10):
         group_b.members.append(Archer(name="archer" + str(i + 1), mygroup = group_b, myworld = world))

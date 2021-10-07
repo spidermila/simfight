@@ -4,6 +4,33 @@ class World:
         self.y = 30
         self.groups = []
     
+    def print_map(self):
+        for row in range(self.y + 2):
+            if row == 0 or row == self.y + 1:
+                print("=" * (self.x + 2))
+            else:
+                for col in range(self.x + 2):
+                    found = False
+                    if col == 0:
+                        print("|", end="")
+                        found = True
+                    elif col == self.x + 1:
+                        print("|")
+                        found = True
+                    else:
+                        for group in self.groups:
+                            for member in group.members:
+                                if member.x == col and member.y == row:
+                                    if member.alive:
+                                        print(group.map_letter, end="")
+                                    else:
+                                        print("x", end="")
+                                    found = True
+                        if found == False:
+                            print(".", end="")
+                        
+
+
     def print_start_summary(self):
         max_name = 0
         for group in self.groups:
@@ -20,6 +47,7 @@ class World:
             print("-" * 50)
 
     def print_intermediate_summary(self):
+        self.print_map()
         max_name = 0
         for group in self.groups:
             c = 0
@@ -88,6 +116,6 @@ class World:
             for member in group.members:
                 if goto_x == member.x and goto_y == member.y:
                     return False
-        if goto_x < 0 or goto_x > self.x or goto_y < 0 or goto_y > self.y:
+        if goto_x <= 0 or goto_x > self.x or goto_y <= 0 or goto_y > self.y:
             return False
         return True
