@@ -238,7 +238,8 @@ class World:
         for group in self.groups:
             for member in group.members:
                 if goto_x == member.x and goto_y == member.y:
-                    return False
+                    if member.alive:
+                        return False
         if goto_x <= 0 or goto_x > self.x or goto_y <= 0 or goto_y > self.y:
             return False
         return True
