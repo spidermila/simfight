@@ -5,25 +5,43 @@ class World:
         self.groups = []
     
     def print_start_summary(self):
+        max_name = 0
+        for group in self.groups:
+            for member in group.members:
+                if len(member.name) > max_name:
+                    max_name = len(member.name)
         print("=" * 50)
         print(" " * 20 + "Summary")
         print("=" * 50)
         for group in self.groups:
             print(f"Group: {group.name}:")
             for member in group.members:
-                print(f"{member.name} - {member.hp} HP, {member.attack_min_range}-{member.attack_max_range} range, {member.attack_min_damage}-{member.attack_max_damage} damage")
+                print(f"{member.name :<{max_name}} - {member.hp} HP, {member.attack_min_range}-{member.attack_max_range} range, {member.attack_min_damage}-{member.attack_max_damage} damage")
             print("-" * 50)
 
     def print_intermediate_summary(self):
-        txt = ""
+        max_name = 0
         for group in self.groups:
             c = 0
+            max_loc = 0
+            for member in group.members:
+                if len(member.name) > max_name:
+                    max_name = len(member.name)
+                if len(f"{member.x}/{member.y}") > max_loc:
+                    max_loc = len(f"{member.x}/{member.y}")
+                if member.alive:
+                    c += 1
+            print(f"--------------- {group.name} -- {c} alive ---------------")
             for member in group.members:
                 if member.alive:
-                    print(f"{member.name}-({member.x}/{member.y})")
+                    if member.target and member.target.alive:
+                        tgt = member.target.name
+                    else:
+                        tgt = "none"
+                    loc = f"{member.x}/{member.y}"
+                    print(f"{member.name :<{max_name}} ({loc :<{max_loc}}) - {member.hp} HP - target: {tgt}")
                     c += 1
-            txt += f"| {group.name}: {c} alive members"
-        print(txt)
+        print("-" * 50)
 
     def place_units(self):
         number_of_groups = len(self.groups)
@@ -45,8 +63,8 @@ class World:
                     if y_next > y_max:
                         print(f"Too many units to fit on the map! {row=}, {group.name=}")
                 unit.x = x_next
-                x_next += 1
                 unit.y = y_next
+                y_next += 1
             
             # populate right side of the map next
             gid += 1
@@ -62,8 +80,8 @@ class World:
                     if y_next > y_max:
                         print(f"Too many units to fit on the map! {row=}, {group.name=}")
                 unit.x = x_next
-                x_next += 1
                 unit.y = y_next
+                y_next += 1
 
     def square_is_valid(self, goto_x, goto_y):
         for group in self.groups:

@@ -12,4 +12,4 @@ class Unit():
         self.attack_credit = 0
 
     def get_distance_to_target(self):
-        return round(math.sqrt((self.x-self.target.x)**2 + (self.y-self.target.y)**2))
+        return math.ceil(math.sqrt((self.x-self.target.x)**2 + (self.y-self.target.y)**2))
