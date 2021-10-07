@@ -69,13 +69,55 @@ class World:
                 if len(member.name) > max_name:
                     max_name = len(member.name)
         print("=" * 50)
-        print(" " * 20 + "Summary")
+        print(" " * 10 + "Initial Pre-combat Summary")
         print("=" * 50)
         for group in self.groups:
             print(f"Group: {group.name}:")
             for member in group.members:
                 print(f"{member.name :<{max_name}} - {member.hp} HP, {member.attack_min_range}-{member.attack_max_range} range, {member.attack_min_damage}-{member.attack_max_damage} damage")
             print("-" * 50)
+
+    def print_end_summary(self):
+        summary = []
+        loser = ""
+        len_grp = 0
+        len_alive = 0
+        len_total = 0
+        for group in self.groups:
+            total = 0
+            alive = 0
+            for member in group.members:
+                if member.alive:
+                    alive += 1
+                total += 1
+            summary.append(
+                {
+                    'group':group.name,
+                    'total':total,
+                    'alive':alive,
+                }
+            )
+            if alive == 0:
+                loser = group.name
+            if len_grp < len(group.name):
+                len_grp = len(group.name)
+            if len_alive < len(str(alive)):
+                len_alive = len(str(alive))
+            if len_total < len(str(total)):
+                len_total = len(str(total))
+        
+        if len_grp < len('Group Name'):
+            len_grp = len('Group Name')
+        if len_alive < len('Alive Units'):
+            len_alive = len('Alive Units')
+        if len_total < len('Total Units'):
+            len_total = len('Total Units')
+
+        print(f"{loser} lost")
+        print()
+        print(f"{'Group Name':>{len_grp}}|{'Total Units':>{len_total}}|{'Alive Units':>{len_alive}}")
+        for i in summary:
+            print(f"{i['group']:>{len_grp}}|{i['total']:>{len_total}}|{i['alive']:>{len_alive}}")
 
     def generate_intermediate_summary(self):
         self.generate_map()

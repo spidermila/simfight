@@ -14,7 +14,7 @@ def main():
     group_b = Group("Group B", map_letter="B")
     world.groups.append(group_a)
     world.groups.append(group_b)
-    for i in range(8):
+    for i in range(5):
         group_a.members.append(Fighter(name="fighter" + str(i + 1), mygroup = group_a, myworld = world))
     for i in range(10):
         group_b.members.append(Archer(name="archer" + str(i + 1), mygroup = group_b, myworld = world))
@@ -22,6 +22,11 @@ def main():
 
     world.cls()
     world.print_start_summary()
+    print("Press Enter to continue or q to quit")
+    a = input()
+    if a == "q":
+        return
+    world.cls()
 
     world.turn = 1
     fight = True
@@ -42,11 +47,12 @@ def main():
         world.print_everything()
         world.turn_log = [] # delete the log after printing
         world.turn += 1
+        print("Press Enter to continue or q to quit")
         a = input()
         if a == "q":
             return
         world.cls()
-    print("Fight ended.")
+    world.print_end_summary()
 
 if __name__ == '__main__':
     raise SystemExit(main())
