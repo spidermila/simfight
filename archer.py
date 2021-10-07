@@ -19,7 +19,6 @@ class Archer(Unit):
         self.target: Optional[Unit] = None
 
     def pick_random_target(self) -> bool:
-        # TODO pick by distance and HP
         for group in self.myworld.groups:
             if group != self.mygroup:
                 if len(group.members) > 0:
@@ -27,14 +26,14 @@ class Archer(Unit):
                     candidate_targets = group.members[:]
                     while len(candidate_targets) > 0:
                         attempt = candidate_targets[randint(0, len(candidate_targets) - 1)]
-                        if isinstance(attempt, Unit):
-                            if attempt not in attempted_targets and attempt.alive == True:
-                                self.target = attempt
+                        if attempt not in attempted_targets and attempt.alive == True:
+                            self.target = attempt
+                            if isinstance(self.target, Unit):
                                 self.myworld.turn_log.append(f"{self.name} targeted {self.target.name}")
                                 return True
-                            else:
-                                attempted_targets.append(attempt)
-                                candidate_targets.pop(candidate_targets.index(attempt))
+                        else:
+                            attempted_targets.append(attempt)
+                            candidate_targets.pop(candidate_targets.index(attempt))
         return False
 
     def move_to_target(self) -> None:
@@ -79,23 +78,23 @@ class Archer(Unit):
 
 
     def do_something(self) -> bool:
-        if isinstance(self.target, Unit):
-            if not self.target or self.target.alive == False:
-                if self.pick_random_target():
-                    pass
-                else:
-                    self.myworld.turn_log.append(f"{self.name} - nothing to target.")
-                    return False
-            straight_dist = self.get_distance_to_target()
-            if straight_dist <= self.attack_max_range and straight_dist >= self.attack_min_range:
-                self.attack_credit += self.attack_speed
-                while self.attack_credit >= 1.0:
-                    self.attack_credit -= 1.0
-                    self.attack()
-            elif straight_dist < self.attack_min_range:
-                # move away from target
-                for i in range(self.move_speed):
-                    straight_dist = self.get_distance_to_target()
+        if not self.target or self.target.alive == False:
+            if self.pick_random_target():
+                pass
+            else:
+                self.myworld.turn_log.append(f"{self.name} - nothing to target.")
+                return False
+        straight_dist = self.get_distance_to_target()
+        if straight_dist <= self.attack_max_range and straight_dist >= self.attack_min_range:
+            self.attack_credit += self.attack_speed
+            while self.attack_credit >= 1.0:
+                self.attack_credit -= 1.0
+                self.attack()
+        elif straight_dist < self.attack_min_range:
+            # move away from target
+            for i in range(self.move_speed):
+                straight_dist = self.get_distance_to_target()
+                if isinstance(self.target, Unit):
                     x_dist = self.x - self.target.x
                     y_dist = self.y - self.target.y
                     if abs(x_dist) > abs(y_dist):
@@ -131,13 +130,13 @@ class Archer(Unit):
                         self.myworld.turn_log.append(f"{self.name} out of bounds")
                     else:
                         self.myworld.turn_log.append(f"{self.name} moved to {self.x},{self.y} - target {self.target.name} at {self.target.x},{self.target.y} - distance {straight_dist}")
-            else:
-                # if not close enough, move to target
-                # only move this turn, number of fields moved depends on the unit's speed
-                for i in range(self.move_speed):
-                    straight_dist = self.get_distance_to_target()
-                    if straight_dist > self.attack_max_range:
-                        self.move_to_target()
-                    else:
-                        break
+        else:
+            # if not close enough, move to target
+            # only move this turn, number of fields moved depends on the unit's speed
+            for i in range(self.move_speed):
+                straight_dist = self.get_distance_to_target()
+                if straight_dist > self.attack_max_range:
+                    self.move_to_target()
+                else:
+                    break
         return True

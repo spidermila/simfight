@@ -32,7 +32,7 @@ def main():
     while fight and world.turn < 100:
         fight = False
         print(f"===================== Turn {world.turn} =====================")
-        world.generate_intermediate_summary()
+#        world.generate_intermediate_summary()
         for ma in group_a.members:
             if ma.alive:
                 result =  ma.do_something()
@@ -43,6 +43,7 @@ def main():
                 result =  mb.do_something()
                 if result == True:
                     fight = True
+        world.generate_intermediate_summary()
         world.print_everything()
         world.turn_log = [] # delete the log after printing
         world.turn += 1

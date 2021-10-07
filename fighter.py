@@ -37,30 +37,46 @@ class Fighter(Unit):
         return False
 
     def pick_closest_target(self) -> bool:
+        maximum_attackers_on_one_target = 6
         for group in self.myworld.groups:
             if group != self.mygroup:
                 if len(group.members) > 0:
                     closest_target = None
                     dst_to_closest = 99999999999
                     for tgt in group.members:
-                        if dst_to_closest > self.get_distance_to_target() - 1:
-                            dst_to_closest = self.get_distance_to_target() - 1
-                            closest_target = tgt
-                    self.target = closest_target
+                        if tgt.alive:
+                            attackers = 0
+                            if dst_to_closest > self.get_distance_to_target() - 1:
+                                for member in self.mygroup.members:
+                                        if member.target == tgt:
+                                            attackers += 1
+                                if attackers < maximum_attackers_on_one_target:
+                                    dst_to_closest = self.get_distance_to_target() - 1
+                                    closest_target = tgt
+                                    self.target = closest_target
+                                    return True
         return False
 
     def pick_lowestHP_target(self) -> bool:
-        if isinstance(self.target, Unit):
-            for group in self.myworld.groups:
-                if group != self.mygroup:
-                    if len(group.members) > 0:
-                        lowestHP_target = None
-                        lowestHP = 99999999999
-                        for tgt in group.members:
-                            if lowestHP > self.target.hp:
-                                lowestHP = self.target.hp
-                                lowestHP_target = tgt
-                        self.target = lowestHP_target
+        maximum_attackers_on_one_target = 6
+        for group in self.myworld.groups:
+            if group != self.mygroup:
+                if len(group.members) > 0:
+                    lowestHP_target = None
+                    lowestHP = 99999999999
+                    for tgt in group.members:
+                        if tgt.alive:
+                            attackers = 0
+                            if isinstance(self.target, Unit):
+                                if lowestHP > self.target.hp:
+                                    for member in self.mygroup.members:
+                                        if member.target == tgt:
+                                            attackers += 1
+                                    if attackers < maximum_attackers_on_one_target:
+                                        lowestHP_target = tgt
+                                        lowestHP = self.target.hp
+                                        self.target = lowestHP_target
+                                        return True
         return False
 
     def attack(self) -> None:
@@ -80,40 +96,54 @@ class Fighter(Unit):
                 self.myworld.turn_log.append(f"{self.name} attacking {self.target.name} ({self.target.hp} HP) - Missed")
 
     def move_to_target(self) -> None:
+        tries = 3
+        tried = 0
         if isinstance(self.target, Unit):
-            best_moves: List = []
-            best_move: List = [0, 0]
-            straight_dist = self.get_distance_to_target() - 1
-            best_move_dst = straight_dist
-            for loc in self.surrounding_fields:
-                dst = self.get_distance_to_target_from_xy(self.x + loc[0], self.y + loc[1]) - 1
-                if best_move_dst == dst and self.myworld.square_is_valid(self.x + loc[0], self.y + loc[1]):
-                    best_moves.append(loc[:])
-                elif best_move_dst > dst and self.myworld.square_is_valid(self.x + loc[0], self.y + loc[1]):
-                    best_move_dst = dst
-                    best_moves = [loc[:]]
-                #self.myworld.turn_log.append(f"{self.name}({self.x},{self.y}) - {straight_dist=} - ({self.target.x},{self.target.y}) - move {loc} - {dst=}, {best_moves=}")
-            if len(best_moves) == 0:
-                # TODO pick a different target
-                self.myworld.turn_log.append(f"{self.name} nowhere to move")
-            else:
-                best_move = best_moves[randint(0, len(best_moves) - 1)]
-                self.x += best_move[0]
-                self.y += best_move[1]
-                straight_dist = self.get_distance_to_target()
-                self.myworld.turn_log.append(f"{self.name} moved {best_move} to ({self.x},{self.y}) - target {self.target.name} ({self.target.x},{self.target.y}) - new distance {straight_dist}")
+            can_move = False
+            while not can_move:
+                best_moves: List = []
+                best_move: List = [0, 0]
+                straight_dist = self.get_distance_to_target() - 1
+                best_move_dst = straight_dist
+                for loc in self.surrounding_fields:
+                    dst = self.get_distance_to_target_from_xy(self.x + loc[0], self.y + loc[1]) - 1
+                    if best_move_dst == dst and self.myworld.square_is_valid(self.x + loc[0], self.y + loc[1]):
+                        best_moves.append(loc[:])
+                    elif best_move_dst > dst and self.myworld.square_is_valid(self.x + loc[0], self.y + loc[1]):
+                        best_move_dst = dst
+                        best_moves = [loc[:]]
+                    #self.myworld.turn_log.append(f"{self.name}({self.x},{self.y}) - {straight_dist=} - ({self.target.x},{self.target.y}) - move {loc} - {dst=}, {best_moves=}")
+                if len(best_moves) == 0:
+                    if tried < tries:
+                        #print('trying 1')
+                        tried += 1
+                        #self.myworld.turn_log.append(f"{self.name} nowhere to move")
+                        self.pick_lowestHP_target()
+                    elif tried < tries * 2:
+                        #print('trying 2')
+                        self.pick_random_target()
+                        tried += 1
+                    else:
+                        #print('trying x')
+                        best_moves = [[0,0]]
+                        can_move = True
+                else:
+                    can_move = True
+            
+            best_move = best_moves[randint(0, len(best_moves) - 1)]
+            self.x += best_move[0]
+            self.y += best_move[1]
+            straight_dist = self.get_distance_to_target()
+            self.myworld.turn_log.append(f"{self.name} moved {best_move} to ({self.x},{self.y}) - target {self.target.name} ({self.target.x},{self.target.y}) - new distance {straight_dist}")
 
     def do_something(self) -> bool:
         if not self.target or self.target.alive == False:
-            if self.pick_random_target():
+            if self.pick_closest_target():
                 pass
             else:
                 self.myworld.turn_log.append(f"{self.name} - nothing to target.")
                 return False
         
-        # pick a better target
-        # TODO
-
         straight_dist = self.get_distance_to_target()
         if straight_dist > self.attack_max_range:
         # if not close enough, move to target

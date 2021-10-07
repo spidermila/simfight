@@ -1,5 +1,6 @@
 import sys
 import os
+
 from typing import List
 
 class World:
@@ -10,7 +11,7 @@ class World:
         self.map: List = []
         self.summary: List = []
         self.turn_log: List = []
-        self.map_corpse_character = "x"
+        self.map_corpse_character = ":"
         self.map_nothing_character = "."
 
         if sys.platform.find('linux') != -1:
