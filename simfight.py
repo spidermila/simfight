@@ -14,9 +14,9 @@ def main():
     group_b = Group("Group B", map_letter="B")
     world.groups.append(group_a)
     world.groups.append(group_b)
-    for i in range(5):
-        group_a.members.append(Fighter(name="fighter" + str(i + 1), mygroup = group_a, myworld = world))
     for i in range(10):
+        group_a.members.append(Fighter(name="fighter" + str(i + 1), mygroup = group_a, myworld = world))
+    for i in range(13):
         group_b.members.append(Archer(name="archer" + str(i + 1), mygroup = group_b, myworld = world))
     world.place_units()
 

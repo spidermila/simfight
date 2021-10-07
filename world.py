@@ -115,9 +115,9 @@ class World:
 
         print(f"{loser} lost")
         print()
-        print(f"{'Group Name':>{len_grp}}|{'Total Units':>{len_total}}|{'Alive Units':>{len_alive}}")
+        print(f"{'Group Name':<{len_grp}} | {'Total Units':<{len_total}} | {'Alive Units':<{len_alive}}")
         for i in summary:
-            print(f"{i['group']:>{len_grp}}|{i['total']:>{len_total}}|{i['alive']:>{len_alive}}")
+            print(f"{i['group']:<{len_grp}} | {i['total']:<{len_total}} | {i['alive']:<{len_alive}}")
 
     def generate_intermediate_summary(self):
         self.generate_map()

@@ -33,6 +33,28 @@ class Archer(Unit):
                             candidate_targets.pop(candidate_targets.index(attempt))
         return False
 
+    def move_to_target(self):
+        best_moves = []
+        best_move = [0, 0]
+        straight_dist = self.get_distance_to_target() - 1
+        best_move_dst = straight_dist
+        for loc in self.surrounding_fields:
+            dst = self.get_distance_to_target_from_xy(self.x + loc[0], self.y + loc[1]) - 1
+            if best_move_dst == dst and self.myworld.square_is_valid(self.x + loc[0], self.y + loc[1]):
+                best_moves.append(loc[:])
+            elif best_move_dst > dst and self.myworld.square_is_valid(self.x + loc[0], self.y + loc[1]):
+                best_move_dst = dst
+                best_moves = [loc[:]]
+            #self.myworld.turn_log.append(f"{self.name}({self.x},{self.y}) - {straight_dist=} - ({self.target.x},{self.target.y}) - move {loc} - {dst=}, {best_moves=}")
+        if len(best_moves) == 0:
+            self.myworld.turn_log.append(f"{self.name} nowhere to move")
+        else:
+            best_move = best_moves[randint(0, len(best_moves) - 1)]
+            self.x += best_move[0]
+            self.y += best_move[1]
+            straight_dist = self.get_distance_to_target()
+            self.myworld.turn_log.append(f"{self.name} moved {best_move} to ({self.x},{self.y}) - target {self.target.name} ({self.target.x},{self.target.y}) - new distance {straight_dist}")
+
     def attack(self):
         if self.accuracy >= randint(1, 100):
             # hit
@@ -107,35 +129,7 @@ class Archer(Unit):
             for i in range(self.move_speed):
                 straight_dist = self.get_distance_to_target()
                 if straight_dist > self.attack_max_range:
-                    x_dist = self.x - self.target.x
-                    y_dist = self.y - self.target.y
-                    if abs(x_dist) > abs(y_dist):
-                        if x_dist > 0:
-                            goto_x = self.x - 1
-                            if self.myworld.square_is_valid(goto_x, self.y):
-                                self.x = goto_x
-                            else:
-                                pass
-                        else:
-                            goto_x = self.x + 1
-                            if self.myworld.square_is_valid(goto_x, self.y):
-                                self.x = goto_x
-                            else:
-                                pass
-                    else:
-                        if y_dist > 0:
-                            goto_y = self.y - 1
-                            if self.myworld.square_is_valid(self.x, goto_y):
-                                self.y = goto_y
-                            else:
-                                pass
-                        else:
-                            goto_y = self.y + 1
-                            if self.myworld.square_is_valid(self.x, goto_y):
-                                self.y = goto_y
-                            else:
-                                pass
-                    self.myworld.turn_log.append(f"{self.name} moved to {self.x},{self.y} - target {self.target.name} at {self.target.x},{self.target.y} - distance {straight_dist}")
+                    self.move_to_target()
                 else:
                     break
         return True
