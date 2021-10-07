@@ -11,12 +11,20 @@ def main():
     world = World()
     group_a = Group("Group A", map_letter="A")
     group_b = Group("Group B", map_letter="B")
+    group_c = Group("Group C", map_letter="C")
+    group_d = Group("Group D", map_letter="D")
     world.groups.append(group_a)
     world.groups.append(group_b)
+    world.groups.append(group_c)
+    world.groups.append(group_d)
     for i in range(70):
-        group_a.members.append(Fighter(name="fighter" + str(i + 1), mygroup = group_a, myworld = world))
+        group_a.members.append(Fighter(name="fighterA" + str(i + 1), mygroup = group_a, myworld = world))
     for i in range(70):
-        group_b.members.append(Archer(name="archer" + str(i + 1), mygroup = group_b, myworld = world))
+        group_b.members.append(Archer(name="archerB" + str(i + 1), mygroup = group_b, myworld = world))
+    for i in range(50):
+        group_c.members.append(Fighter(name="fighterC" + str(i + 1), mygroup = group_c, myworld = world))
+    for i in range(30):
+        group_d.members.append(Archer(name="archerD" + str(i + 1), mygroup = group_d, myworld = world))
     world.place_units()
 
     world.cls()
@@ -33,16 +41,13 @@ def main():
         fight = False
         print(f"===================== Turn {world.turn} =====================")
 #        world.generate_intermediate_summary()
-        for ma in group_a.members:
-            if ma.alive:
-                result =  ma.do_something()
-                if result == True:
-                    fight = True
-        for mb in group_b.members:
-            if mb.alive:
-                result =  mb.do_something()
-                if result == True:
-                    fight = True
+        for group in world.groups:
+            for m in group.members:
+                if m.alive:
+                    result =  m.do_something()
+                    if result == True:
+                        fight = True
+
         world.generate_intermediate_summary()
         world.print_everything()
         world.turn_log = [] # delete the log after printing

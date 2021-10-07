@@ -1,5 +1,6 @@
 import sys
 import os
+import math
 
 from typing import List
 
@@ -199,10 +200,11 @@ class World:
         
     def place_units(self) -> None:
         number_of_groups = len(self.groups)
-        rows = int(number_of_groups / 2)
-        gid = 0
+        rows = math.ceil(number_of_groups / 2)
+        gid = -1
         for row in range(rows):
             # populate left side of the map first
+            gid += 1
             group = self.groups[gid]
             left_col_x_min = 1
             left_col_x_max = int(self.x / 2)

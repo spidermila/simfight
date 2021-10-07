@@ -19,64 +19,73 @@ class Fighter(Unit):
         self.target: Optional[Unit] = None
 
     def pick_random_target(self) -> bool:
+        candidates = []
         for group in self.myworld.groups:
             if group != self.mygroup:
                 if len(group.members) > 0:
-                    attempted_targets = []
-                    candidate_targets = group.members[:]
-                    while len(candidate_targets) > 0:
-                        attempt = candidate_targets[randint(0, len(candidate_targets) - 1)]
-                        if attempt not in attempted_targets and attempt.alive == True:
-                            self.target = attempt
-                            if isinstance(self.target, Unit):
-                                self.myworld.turn_log.append(f"{self.name} targeted {self.target.name}")
-                                return True
-                        else:
-                            attempted_targets.append(attempt)
-                            candidate_targets.pop(candidate_targets.index(attempt))
+                    for member in group.members:
+                        candidates.append(member)
+        attempted_targets = []
+        candidate_targets = candidates[:]
+        while len(candidate_targets) > 0:
+            attempt = candidate_targets[randint(0, len(candidate_targets) - 1)]
+            if attempt not in attempted_targets and attempt.alive == True:
+                self.target = attempt
+                if isinstance(self.target, Unit):
+                    self.myworld.turn_log.append(f"{self.name} targeted {self.target.name}")
+                    return True
+            else:
+                attempted_targets.append(attempt)
+                candidate_targets.pop(candidate_targets.index(attempt))
         return False
 
     def pick_closest_target(self) -> bool:
         maximum_attackers_on_one_target = 6
+        candidates = []
         for group in self.myworld.groups:
             if group != self.mygroup:
                 if len(group.members) > 0:
-                    closest_target = None
-                    dst_to_closest = 99999999999
-                    for tgt in group.members:
-                        if tgt.alive:
-                            attackers = 0
-                            if dst_to_closest > self.get_distance_to_target() - 1:
-                                for member in self.mygroup.members:
-                                        if member.target == tgt:
-                                            attackers += 1
-                                if attackers < maximum_attackers_on_one_target:
-                                    dst_to_closest = self.get_distance_to_target() - 1
-                                    closest_target = tgt
-                                    self.target = closest_target
-                                    return True
+                    for member in group.members:
+                        if member.alive:
+                            candidates.append(member)
+        closest_target = None
+        dst_to_closest = 99999999999
+        for tgt in candidates:
+            attackers = 0
+            if dst_to_closest > self.get_distance_to_target() - 1:
+                for candidate in candidates:
+                        if candidate.target == tgt:
+                            attackers += 1
+                if attackers < maximum_attackers_on_one_target:
+                    dst_to_closest = self.get_distance_to_target() - 1
+                    closest_target = tgt
+                    self.target = closest_target
+                    return True
         return False
 
     def pick_lowestHP_target(self) -> bool:
         maximum_attackers_on_one_target = 6
+        candidates = []
         for group in self.myworld.groups:
             if group != self.mygroup:
                 if len(group.members) > 0:
-                    lowestHP_target = None
-                    lowestHP = 99999999999
-                    for tgt in group.members:
-                        if tgt.alive:
-                            attackers = 0
-                            if isinstance(self.target, Unit):
-                                if lowestHP > self.target.hp:
-                                    for member in self.mygroup.members:
-                                        if member.target == tgt:
-                                            attackers += 1
-                                    if attackers < maximum_attackers_on_one_target:
-                                        lowestHP_target = tgt
-                                        lowestHP = self.target.hp
-                                        self.target = lowestHP_target
-                                        return True
+                    for member in group.members:
+                        if member.alive:
+                            candidates.append(member)
+        lowestHP_target = None
+        lowestHP = 99999999999
+        for tgt in candidates:
+            attackers = 0
+            if isinstance(self.target, Unit):
+                if lowestHP > self.target.hp:
+                    for candidate in candidates:
+                        if candidate.target == tgt:
+                            attackers += 1
+                    if attackers < maximum_attackers_on_one_target:
+                        lowestHP_target = tgt
+                        lowestHP = self.target.hp
+                        self.target = lowestHP_target
+                        return True
         return False
 
     def attack(self) -> None:
