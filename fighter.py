@@ -17,6 +17,7 @@ class Fighter(Unit):
         self.target = None
 
     def pick_target(self):
+        # TODO pick by distance and HP
         for group in self.myworld.groups:
             if group != self.mygroup:
                 if len(group.members) > 0:
@@ -62,6 +63,7 @@ class Fighter(Unit):
                 best_moves = [loc[:]]
             #self.myworld.turn_log.append(f"{self.name}({self.x},{self.y}) - {straight_dist=} - ({self.target.x},{self.target.y}) - move {loc} - {dst=}, {best_moves=}")
         if len(best_moves) == 0:
+            # TODO pick a different target
             self.myworld.turn_log.append(f"{self.name} nowhere to move")
         else:
             best_move = best_moves[randint(0, len(best_moves) - 1)]

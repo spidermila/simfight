@@ -173,17 +173,25 @@ class World:
         for sum in self.summary:
             if max_sum_len < len(sum):
                 max_sum_len = len(sum)
+        max_map_len = 0
+        for m in self.map:
+            if max_map_len < len(m):
+                max_map_len = len(m)
 
         winner = self.longest_list(self.map, self.summary, self.turn_log)
+        tmp_map = []
         for i in range(len(winner)):
             if i >= len(self.turn_log):
                 self.turn_log.append(f"{str(''):<{max_msg_len}}")
             if i >= len(self.summary):
                 self.summary.append(f"{str(''):<{max_sum_len}}")
-            if i >= len(self.map):
-                self.map.append(f"{str(''):<{self.x+2}}")
-        for i, m in enumerate(self.map):
-            print(f"{self.map[i]:<{self.x+2}} {self.summary[i]:<{max_sum_len}} {self.turn_log[i]:<{max_msg_len}}")
+            if i < len(winner) - len(self.map):
+                tmp_map.append(f"{str(''):<{self.x+2}}")
+            else:
+                tmp_map.append(self.map[i - (len(winner) - len(self.map))])
+                #self.map.append(f"{str(''):<{self.x+2}}")
+        for i, m in enumerate(winner):
+            print(f"{tmp_map[i]:<{max_map_len}} {self.summary[i]:<{max_sum_len}} {self.turn_log[i]:<{max_msg_len}}")
         
         
     def place_units(self):
@@ -200,10 +208,10 @@ class World:
             x_next = left_col_x_min
             y_next = y_min
             for unit in group.members:
-                if x_next > left_col_x_max:
-                    y_next += 1
-                    x_next = left_col_x_min
-                    if y_next > y_max:
+                if y_next > y_max:
+                    x_next += 1
+                    y_next = y_min
+                    if x_next > left_col_x_max:
                         print(f"Too many units to fit on the map! {row=}, {group.name=}")
                 unit.x = x_next
                 unit.y = y_next
@@ -217,10 +225,10 @@ class World:
             x_next = right_col_x_min
             y_next = y_min
             for unit in group.members:
-                if x_next > right_col_x_max:
-                    y_next += 1
-                    x_next = right_col_x_min
-                    if y_next > y_max:
+                if y_next > y_max:
+                    x_next += 1
+                    y_next = y_min
+                    if x_next > right_col_x_max:
                         print(f"Too many units to fit on the map! {row=}, {group.name=}")
                 unit.x = x_next
                 unit.y = y_next
