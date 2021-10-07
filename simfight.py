@@ -6,6 +6,7 @@ from group import Group
 from archer import Archer
 from world import World
 
+    
 
 def main():
     world = World()
@@ -19,6 +20,7 @@ def main():
         group_b.members.append(Archer(name="archer" + str(i + 1), mygroup = group_b, myworld = world))
     world.place_units()
 
+    world.cls()
     world.print_start_summary()
 
     world.turn = 1
@@ -26,7 +28,7 @@ def main():
     while fight and world.turn < 100:
         fight = False
         print(f"===================== Turn {world.turn} =====================")
-        world.print_intermediate_summary()
+        world.generate_intermediate_summary()
         for ma in group_a.members:
             if ma.alive:
                 result =  ma.do_something()
@@ -37,7 +39,13 @@ def main():
                 result =  mb.do_something()
                 if result == True:
                     fight = True
+        world.print_everything()
+        world.turn_log = [] # delete the log after printing
         world.turn += 1
+        a = input()
+        if a == "q":
+            return
+        world.cls()
     print("Fight ended.")
 
 if __name__ == '__main__':

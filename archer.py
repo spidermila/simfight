@@ -1,5 +1,3 @@
-import math
-
 from random import randint
 
 from unit import Unit
@@ -28,7 +26,7 @@ class Archer(Unit):
                         attempt = candidate_targets[randint(0, len(candidate_targets) - 1)]
                         if attempt not in attempted_targets and attempt.alive == True:
                             self.target = attempt
-                            print(f"{self.name} targeted {self.target.name}")
+                            self.myworld.turn_log.append(f"{self.name} targeted {self.target.name}")
                             return True
                         else:
                             attempted_targets.append(attempt)
@@ -40,15 +38,15 @@ class Archer(Unit):
             # hit
             dmg = randint(self.attack_min_damage, self.attack_max_damage)
             if self.target.hp - dmg <= 0:
-                print(f"{self.name} shooting {self.target.name} ({self.target.hp} HP) - Hit for {dmg} - Target killed")
+                self.myworld.turn_log.append(f"{self.name} shooting {self.target.name} ({self.target.hp} HP) - Hit for {dmg} - Target killed")
                 self.target.hp -= dmg
                 self.target.alive = False
                 self.target = None
             else:
-                print(f"{self.name} shooting {self.target.name} ({self.target.hp} HP) - Hit for {dmg}")
+                self.myworld.turn_log.append(f"{self.name} shooting {self.target.name} ({self.target.hp} HP) - Hit for {dmg}")
                 self.target.hp -= dmg
         else:
-            print(f"{self.name} shooting {self.target.name} ({self.target.hp} HP) - Missed")
+            self.myworld.turn_log.append(f"{self.name} shooting {self.target.name} ({self.target.hp} HP) - Missed")
 
 
     def do_something(self):
@@ -56,7 +54,7 @@ class Archer(Unit):
             if self.pick_target():
                 pass
             else:
-                print(f"{self.name} - nothing to target.")
+                self.myworld.turn_log.append(f"{self.name} - nothing to target.")
                 return False
         straight_dist = self.get_distance_to_target()
         if straight_dist <= self.attack_max_range and straight_dist >= self.attack_min_range:
@@ -100,9 +98,9 @@ class Archer(Unit):
                         self.y = goto_y
                 if self.x > self.myworld.x or self.x < 1:
                     self.alive = False
-                    print(f"{self.name} out of bounds")
+                    self.myworld.turn_log.append(f"{self.name} out of bounds")
                 else:
-                    print(f"{self.name} moved to {self.x},{self.y} - target {self.target.name} at {self.target.x},{self.target.y} - distance {straight_dist}")
+                    self.myworld.turn_log.append(f"{self.name} moved to {self.x},{self.y} - target {self.target.name} at {self.target.x},{self.target.y} - distance {straight_dist}")
         else:
             # if not close enough, move to target
             # only move this turn, number of fields moved depends on the unit's speed
@@ -137,7 +135,7 @@ class Archer(Unit):
                                 self.y = goto_y
                             else:
                                 pass
-                    print(f"{self.name} moved to {self.x},{self.y} - target {self.target.name} at {self.target.x},{self.target.y} - distance {straight_dist}")
+                    self.myworld.turn_log.append(f"{self.name} moved to {self.x},{self.y} - target {self.target.name} at {self.target.x},{self.target.y} - distance {straight_dist}")
                 else:
                     break
         return True

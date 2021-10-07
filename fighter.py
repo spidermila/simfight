@@ -26,7 +26,7 @@ class Fighter(Unit):
                         attempt = candidate_targets[randint(0, len(candidate_targets) - 1)]
                         if attempt not in attempted_targets and attempt.alive == True:
                             self.target = attempt
-                            print(f"{self.name} targeted {self.target.name}")
+                            self.myworld.turn_log.append(f"{self.name} targeted {self.target.name}")
                             return True
                         else:
                             attempted_targets.append(attempt)
@@ -38,15 +38,15 @@ class Fighter(Unit):
             # hit
             dmg = randint(self.attack_min_damage, self.attack_max_damage)
             if self.target.hp - dmg <= 0:
-                print(f"{self.name} attacking {self.target.name} ({self.target.hp} HP) - Hit for {dmg} - Target killed")
+                self.myworld.turn_log.append(f"{self.name} attacking {self.target.name} ({self.target.hp} HP) - Hit for {dmg} - Target killed")
                 self.target.hp -= dmg
                 self.target.alive = False
                 self.target = None
             else:
-                print(f"{self.name} attacking {self.target.name} ({self.target.hp} HP) - Hit for {dmg}")
+                self.myworld.turn_log.append(f"{self.name} attacking {self.target.name} ({self.target.hp} HP) - Hit for {dmg}")
                 self.target.hp -= dmg
         else:
-            print(f"{self.name} attacking {self.target.name} ({self.target.hp} HP) - Missed")
+            self.myworld.turn_log.append(f"{self.name} attacking {self.target.name} ({self.target.hp} HP) - Missed")
 
     def move_to_target(self):
         best_moves = []
@@ -60,22 +60,22 @@ class Fighter(Unit):
             elif best_move_dst > dst and self.myworld.square_is_valid(self.x + loc[0], self.y + loc[1]):
                 best_move_dst = dst
                 best_moves = [loc[:]]
-            #print(f"{self.name}({self.x},{self.y}) - {straight_dist=} - ({self.target.x},{self.target.y}) - move {loc} - {dst=}, {best_moves=}")
+            #self.myworld.turn_log.append(f"{self.name}({self.x},{self.y}) - {straight_dist=} - ({self.target.x},{self.target.y}) - move {loc} - {dst=}, {best_moves=}")
         if len(best_moves) == 0:
-            print(f"{self.name} nowhere to move")
+            self.myworld.turn_log.append(f"{self.name} nowhere to move")
         else:
             best_move = best_moves[randint(0, len(best_moves) - 1)]
             self.x += best_move[0]
             self.y += best_move[1]
             straight_dist = self.get_distance_to_target()
-            print(f"{self.name} moved {best_move} to ({self.x},{self.y}) - target {self.target.name} ({self.target.x},{self.target.y}) - new distance {straight_dist}")
+            self.myworld.turn_log.append(f"{self.name} moved {best_move} to ({self.x},{self.y}) - target {self.target.name} ({self.target.x},{self.target.y}) - new distance {straight_dist}")
 
     def do_something(self):
         if not self.target or self.target.alive == False:
             if self.pick_target():
                 pass
             else:
-                print(f"{self.name} - nothing to target.")
+                self.myworld.turn_log.append(f"{self.name} - nothing to target.")
                 return False
 
         straight_dist = self.get_distance_to_target()

@@ -1,35 +1,66 @@
+import sys
+import os
+
 class World:
     def __init__(self):
         self.x = 50
         self.y = 30
         self.groups = []
-    
-    def print_map(self):
+        self.map = []
+        self.summary = []
+        self.turn_log = []
+        self.map_corpse_character = "x"
+        self.map_nothing_character = "."
+
+        if sys.platform.find('linux') != -1:
+            self.cls_command = 'clear'
+        elif sys.platform.find('win') != -1:
+            self.cls_command = 'cls'
+        elif sys.platform.find('darwin') != -1:
+            self.cls_command = 'clear'
+        else:
+            print('Unknown OS. cls will not work!')
+            self.cls_command = False # type: ignore
+
+    def cls(self) -> None:
+        if self.cls_command: os.system(self.cls_command)
+
+    def longest_list(self, *args) -> list:
+        max = 0
+        for l in args:
+            if max < len(l):
+                max = len(l)
+                winner = l
+        return winner
+
+    def generate_map(self):
+        self.map = []
         for row in range(self.y + 2):
+            r = f"{str(row):>{2}}"
             if row == 0 or row == self.y + 1:
-                print("=" * (self.x + 2))
+                r = r + "=" * (self.x + 2)
             else:
                 for col in range(self.x + 2):
                     found = False
-                    if col == 0:
-                        print("|", end="")
-                        found = True
-                    elif col == self.x + 1:
-                        print("|")
+                    if col == 0 or col == self.x + 1:
+                        r = r + "|"
                         found = True
                     else:
                         for group in self.groups:
                             for member in group.members:
                                 if member.x == col and member.y == row:
                                     if member.alive:
-                                        print(group.map_letter, end="")
+                                        r = r + group.map_letter
                                     else:
-                                        print("x", end="")
+                                        r = r + self.map_corpse_character
                                     found = True
                         if found == False:
-                            print(".", end="")
-                        
+                            r = r + self.map_nothing_character
+            self.map.append(r)
 
+    def print_map(self):
+        for o in self.map:
+            print(o)
 
     def print_start_summary(self):
         max_name = 0
@@ -46,9 +77,11 @@ class World:
                 print(f"{member.name :<{max_name}} - {member.hp} HP, {member.attack_min_range}-{member.attack_max_range} range, {member.attack_min_damage}-{member.attack_max_damage} damage")
             print("-" * 50)
 
-    def print_intermediate_summary(self):
-        self.print_map()
+    def generate_intermediate_summary(self):
+        self.generate_map()
+        #self.print_map()
         max_name = 0
+        self.summary = []
         for group in self.groups:
             c = 0
             max_loc = 0
@@ -59,7 +92,7 @@ class World:
                     max_loc = len(f"{member.x}/{member.y}")
                 if member.alive:
                     c += 1
-            print(f"--------------- {group.name} -- {c} alive ---------------")
+            self.summary.append(f"--------------- {group.name} -- {c} alive ---------------")
             for member in group.members:
                 if member.alive:
                     if member.target and member.target.alive:
@@ -67,10 +100,50 @@ class World:
                     else:
                         tgt = "none"
                     loc = f"{member.x}/{member.y}"
-                    print(f"{member.name :<{max_name}} ({loc :<{max_loc}}) - {member.hp} HP - target: {tgt}")
+                    self.summary.append(f"{member.name :<{max_name}} ({loc :<{max_loc}}) - {member.hp} HP - target: {tgt}")
                     c += 1
-        print("-" * 50)
+        self.summary.append("-" * 50)
+        
+    def print_intermediate_summary(self):
+        for s in self.summary:
+            print(s)
 
+    def print_intermediate_summary_w_map(self):
+        if len(self.map) > len(self.summary):
+            for i, m in enumerate(self.map):
+                if i < len(self.summary):
+                    print(f"{self.map[i]} {self.summary[i]}")
+                else:
+                    print(f"{m}")
+        else:
+            for i, s in enumerate(self.summary):
+                if i < len(self.map):
+                    print(f"{self.map[i]} {s}")
+                else:
+                    print(" " * (self.x + 2) + s)
+
+    def print_everything(self):
+        max_msg_len = 0
+        for msg in self.turn_log:
+            if max_msg_len < len(msg):
+                max_msg_len = len(msg)
+        max_sum_len = 0
+        for sum in self.summary:
+            if max_sum_len < len(sum):
+                max_sum_len = len(sum)
+
+        winner = self.longest_list(self.map, self.summary, self.turn_log)
+        for i in range(len(winner)):
+            if i >= len(self.turn_log):
+                self.turn_log.append(f"{str(''):<{max_msg_len}}")
+            if i >= len(self.summary):
+                self.summary.append(f"{str(''):<{max_sum_len}}")
+            if i >= len(self.map):
+                self.map.append(f"{str(''):<{self.x+2}}")
+        for i, m in enumerate(self.map):
+            print(f"{self.map[i]:<{self.x+2}} {self.summary[i]:<{max_sum_len}} {self.turn_log[i]:<{max_msg_len}}")
+        
+        
     def place_units(self):
         number_of_groups = len(self.groups)
         rows = int(number_of_groups / 2)
