@@ -70,6 +70,7 @@ class Archer(Unit):
                     self.target.hp -= dmg
                     self.target.alive = False
                     self.target = None
+                    self.mygroup.kills += 1
                 else:
                     self.myworld.turn_log.append(f'{self.name} shooting {self.target.name} ({self.target.hp} HP) - Hit for {dmg}')
                     self.target.hp -= dmg

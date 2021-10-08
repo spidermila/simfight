@@ -5,17 +5,27 @@ from typing import Optional
 from unit import Unit
 
 class Fighter(Unit):
-    def __init__(self, *args, name = 'fighter', **kwargs) -> None:
+    def __init__(
+            self,
+            *args,
+            name = 'fighter',
+            accuracy = 80,
+            hp = 20,
+            attack_min_damage = 2,
+            attack_max_damage = 10,
+            **kwargs,
+    ) -> None:
+
         super().__init__(*args, **kwargs)
         self.name = name
-        self.hp = 20
+        self.hp = hp
         self.move_speed = 2
         self.attack_speed = 1.0
         self.attack_max_range = 1
         self.attack_min_range = 1
-        self.attack_min_damage = 2
-        self.attack_max_damage = 10
-        self.accuracy = 80
+        self.attack_min_damage = attack_min_damage
+        self.attack_max_damage = attack_max_damage
+        self.accuracy = accuracy
         self.target: Optional[Unit] = None
 
     def pick_random_target(self) -> bool:
@@ -98,6 +108,7 @@ class Fighter(Unit):
                     self.target.hp -= dmg
                     self.target.alive = False
                     self.target = None
+                    self.mygroup.kills += 1
                 else:
                     self.myworld.turn_log.append(f'{self.name} attacking {self.target.name} ({self.target.hp} HP) - Hit for {dmg}')
                     self.target.hp -= dmg
@@ -143,7 +154,9 @@ class Fighter(Unit):
             self.x += best_move[0]
             self.y += best_move[1]
             straight_dist = self.get_distance_to_target()
-            self.myworld.turn_log.append(f'{self.name} moved {best_move} to ({self.x},{self.y}) - target {self.target.name} ({self.target.x},{self.target.y}) - new distance {straight_dist}')
+            self.myworld.turn_log.append(
+                f'{self.name} moved {best_move} to ({self.x},{self.y}) - target {self.target.name} ({self.target.x},{self.target.y}) - new distance {straight_dist}',
+            )
 
     def do_something(self) -> bool:
         if not self.target or self.target.alive == False:

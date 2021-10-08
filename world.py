@@ -61,6 +61,25 @@ class World:
                             r = r + self.map_nothing_character
             self.map.append(r)
 
+        max_name = 0
+        max_alive = 0
+        max_kills = 0
+        max_dead = 0
+        for group in self.groups:
+            if len(group.name) > max_name:
+                max_name = len(group.name)
+            if len(str(group.get_alive_count())) > max_alive:
+                max_alive = len(str(group.get_alive_count()))
+            if len(str(group.kills)) > max_kills:
+                max_kills = len(str(group.kills))
+            if len(str(group.get_dead_count())) > max_dead:
+                max_dead = len(str(group.get_dead_count()))
+
+        for group in self.groups:
+            self.map.append(
+                f'{group.name:<{max_name}} | {group.get_dead_count():<{max_dead}} dead | {group.get_alive_count():<{max_alive}} alive | {group.kills:<{max_kills}} kills',
+            )
+
     def print_map(self) -> None:
         for o in self.map:
             print(o)

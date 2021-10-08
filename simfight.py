@@ -20,7 +20,7 @@ def main():
     show_log = args.l
 
     world = World()
-    group_a = Group('Group A fighters', map_letter='A')
+    group_a = Group('Group A elite fighters', map_letter='A')
     group_b = Group('Group B archers', map_letter='B')
     group_c = Group('Group C fighters', map_letter='C')
     group_d = Group('Group D archers', map_letter='D')
@@ -29,7 +29,17 @@ def main():
     world.groups.append(group_c)
     world.groups.append(group_d)
     for i in range(60):
-        group_a.members.append(Fighter(name='fighterA' + str(i + 1), mygroup = group_a, myworld = world))
+        group_a.members.append(
+            Fighter(
+            name='elite fighterA' + str(i + 1),
+            accuracy = 95,
+            hp = 50,
+            attack_min_damage = 5,
+            attack_max_damage = 20,
+            mygroup = group_a,
+            myworld = world,
+            ),
+        )
     for i in range(60):
         group_b.members.append(Archer(name='archerB' + str(i + 1), mygroup = group_b, myworld = world))
     for i in range(50):
