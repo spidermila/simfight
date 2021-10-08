@@ -19,21 +19,24 @@ class Archer(Unit):
         self.target: Optional[Unit] = None
 
     def pick_random_target(self) -> bool:
+        candidates = []
         for group in self.myworld.groups:
             if group != self.mygroup:
                 if len(group.members) > 0:
-                    attempted_targets = []
-                    candidate_targets = group.members[:]
-                    while len(candidate_targets) > 0:
-                        attempt = candidate_targets[randint(0, len(candidate_targets) - 1)]
-                        if attempt not in attempted_targets and attempt.alive == True:
-                            self.target = attempt
-                            if isinstance(self.target, Unit):
-                                self.myworld.turn_log.append(f'{self.name} targeted {self.target.name}')
-                                return True
-                        else:
-                            attempted_targets.append(attempt)
-                            candidate_targets.pop(candidate_targets.index(attempt))
+                    for member in group.members:
+                        candidates.append(member)
+        attempted_targets = []
+        candidate_targets = candidates[:]
+        while len(candidate_targets) > 0:
+            attempt = candidate_targets[randint(0, len(candidate_targets) - 1)]
+            if attempt not in attempted_targets and attempt.alive == True:
+                self.target = attempt
+                if isinstance(self.target, Unit):
+                    self.myworld.turn_log.append(f'{self.name} targeted {self.target.name}')
+                    return True
+            else:
+                attempted_targets.append(attempt)
+                candidate_targets.pop(candidate_targets.index(attempt))
         return False
 
     def move_to_target(self) -> None:
