@@ -1,7 +1,6 @@
-import sys
-import os
 import math
-
+import os
+import sys
 from typing import List
 
 class World:
@@ -12,8 +11,8 @@ class World:
         self.map: List = []
         self.summary: List = []
         self.turn_log: List = []
-        self.map_corpse_character = ":"
-        self.map_nothing_character = "."
+        self.map_corpse_character = ':'
+        self.map_nothing_character = '.'
 
         if sys.platform.find('linux') != -1:
             self.cls_command = 'clear'
@@ -39,14 +38,14 @@ class World:
     def generate_map(self) -> None:
         self.map = []
         for row in range(self.y + 2):
-            r = f"{str(row):>{2}}"
+            r = f'{str(row):>{2}}'
             if row == 0 or row == self.y + 1:
-                r = r + "=" * (self.x + 2)
+                r = r + '=' * (self.x + 2)
             else:
                 for col in range(self.x + 2):
                     found = False
                     if col == 0 or col == self.x + 1:
-                        r = r + "|"
+                        r = r + '|'
                         found = True
                     else:
                         for group in self.groups:
@@ -72,18 +71,18 @@ class World:
             for member in group.members:
                 if len(member.name) > max_name:
                     max_name = len(member.name)
-        print("=" * 50)
-        print(" " * 10 + "Initial Pre-combat Summary")
-        print("=" * 50)
+        print('=' * 50)
+        print(' ' * 10 + 'Initial Pre-combat Summary')
+        print('=' * 50)
         for group in self.groups:
-            print(f"Group: {group.name}:")
+            print(f'Group: {group.name}:')
             for member in group.members:
-                print(f"{member.name :<{max_name}} - {member.hp} HP, {member.attack_min_range}-{member.attack_max_range} range, {member.attack_min_damage}-{member.attack_max_damage} damage")
-            print("-" * 50)
+                print(f'{member.name :<{max_name}} - {member.hp} HP, {member.attack_min_range}-{member.attack_max_range} range, {member.attack_min_damage}-{member.attack_max_damage} damage')
+            print('-' * 50)
 
     def print_end_summary(self) -> None:
         summary = []
-        loser = ""
+        loser = ''
         len_grp = 0
         len_alive = 0
         len_total = 0
@@ -99,7 +98,7 @@ class World:
                     'group':group.name,
                     'total':total,
                     'alive':alive,
-                }
+                },
             )
             if alive == 0:
                 loser = group.name
@@ -109,7 +108,7 @@ class World:
                 len_alive = len(str(alive))
             if len_total < len(str(total)):
                 len_total = len(str(total))
-        
+
         if len_grp < len('Group Name'):
             len_grp = len('Group Name')
         if len_alive < len('Alive Units'):
@@ -117,7 +116,7 @@ class World:
         if len_total < len('Total Units'):
             len_total = len('Total Units')
 
-        print(f"{loser} lost")
+        print(f'{loser} lost')
         print()
         print(f"{'Group Name':<{len_grp}} | {'Total Units':<{len_total}} | {'Alive Units':<{len_alive}}")
         for i in summary:
@@ -134,22 +133,22 @@ class World:
             for member in group.members:
                 if len(member.name) > max_name:
                     max_name = len(member.name)
-                if len(f"{member.x}/{member.y}") > max_loc:
-                    max_loc = len(f"{member.x}/{member.y}")
+                if len(f'{member.x}/{member.y}') > max_loc:
+                    max_loc = len(f'{member.x}/{member.y}')
                 if member.alive:
                     c += 1
-            self.summary.append(f"--------------- {group.name} -- {c} alive ---------------")
+            self.summary.append(f'--------------- {group.name} -- {c} alive ---------------')
             for member in group.members:
                 if member.alive:
                     if member.target and member.target.alive:
                         tgt = member.target.name
                     else:
-                        tgt = "none"
-                    loc = f"{member.x}/{member.y}"
-                    self.summary.append(f"{member.name :<{max_name}} ({loc :<{max_loc}}) - {member.hp} HP - target: {tgt}")
+                        tgt = 'none'
+                    loc = f'{member.x}/{member.y}'
+                    self.summary.append(f'{member.name :<{max_name}} ({loc :<{max_loc}}) - {member.hp} HP - target: {tgt}')
                     c += 1
-        self.summary.append("-" * 50)
-        
+        self.summary.append('-' * 50)
+
     def print_intermediate_summary(self) -> None:
         for s in self.summary:
             print(s)
@@ -158,15 +157,15 @@ class World:
         if len(self.map) > len(self.summary):
             for i, m in enumerate(self.map):
                 if i < len(self.summary):
-                    print(f"{self.map[i]} {self.summary[i]}")
+                    print(f'{self.map[i]} {self.summary[i]}')
                 else:
-                    print(f"{m}")
+                    print(f'{m}')
         else:
             for i, s in enumerate(self.summary):
                 if i < len(self.map):
-                    print(f"{self.map[i]} {s}")
+                    print(f'{self.map[i]} {s}')
                 else:
-                    print(" " * (self.x + 2) + s)
+                    print(' ' * (self.x + 2) + s)
 
     def print_everything(self) -> None:
         max_msg_len = 0
@@ -195,9 +194,9 @@ class World:
                 tmp_map.append(self.map[i - (len(winner) - len(self.map))])
                 #self.map.append(f"{str(''):<{self.x+2}}")
         for i, m in enumerate(winner):
-            print(f"{tmp_map[i]:<{max_map_len}} {self.summary[i]:<{max_sum_len}} {self.turn_log[i]:<{max_msg_len}}")
-        
-        
+            print(f'{tmp_map[i]:<{max_map_len}} {self.summary[i]:<{max_sum_len}} {self.turn_log[i]:<{max_msg_len}}')
+
+
     def place_units(self) -> None:
         number_of_groups = len(self.groups)
         rows = math.ceil(number_of_groups / 2)
@@ -217,11 +216,11 @@ class World:
                     x_next += 1
                     y_next = y_min
                     if x_next > left_col_x_max:
-                        print(f"Too many units to fit on the map! {row=}, {group.name=}")
+                        print(f'Too many units to fit on the map! {row=}, {group.name=}')
                 unit.x = x_next
                 unit.y = y_next
                 y_next += 1
-            
+
             # populate right side of the map next
             gid += 1
             right_col_x_min = int(self.x / 2) + 1
@@ -234,7 +233,7 @@ class World:
                     x_next += 1
                     y_next = y_min
                     if x_next > right_col_x_max:
-                        print(f"Too many units to fit on the map! {row=}, {group.name=}")
+                        print(f'Too many units to fit on the map! {row=}, {group.name=}')
                 unit.x = x_next
                 unit.y = y_next
                 y_next += 1

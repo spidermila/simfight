@@ -1,11 +1,11 @@
 from random import randint
-
-from typing import Optional
 from typing import List
+from typing import Optional
+
 from unit import Unit
 
 class Fighter(Unit):
-    def __init__(self, *args, name = "fighter", **kwargs) -> None:
+    def __init__(self, *args, name = 'fighter', **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.name = name
         self.hp = 20
@@ -32,7 +32,7 @@ class Fighter(Unit):
             if attempt not in attempted_targets and attempt.alive == True:
                 self.target = attempt
                 if isinstance(self.target, Unit):
-                    self.myworld.turn_log.append(f"{self.name} targeted {self.target.name}")
+                    self.myworld.turn_log.append(f'{self.name} targeted {self.target.name}')
                     return True
             else:
                 attempted_targets.append(attempt)
@@ -94,15 +94,15 @@ class Fighter(Unit):
                 # hit
                 dmg = randint(self.attack_min_damage, self.attack_max_damage)
                 if self.target.hp - dmg <= 0:
-                    self.myworld.turn_log.append(f"{self.name} attacking {self.target.name} ({self.target.hp} HP) - Hit for {dmg} - Target killed")
+                    self.myworld.turn_log.append(f'{self.name} attacking {self.target.name} ({self.target.hp} HP) - Hit for {dmg} - Target killed')
                     self.target.hp -= dmg
                     self.target.alive = False
                     self.target = None
                 else:
-                    self.myworld.turn_log.append(f"{self.name} attacking {self.target.name} ({self.target.hp} HP) - Hit for {dmg}")
+                    self.myworld.turn_log.append(f'{self.name} attacking {self.target.name} ({self.target.hp} HP) - Hit for {dmg}')
                     self.target.hp -= dmg
             else:
-                self.myworld.turn_log.append(f"{self.name} attacking {self.target.name} ({self.target.hp} HP) - Missed")
+                self.myworld.turn_log.append(f'{self.name} attacking {self.target.name} ({self.target.hp} HP) - Missed')
 
     def move_to_target(self) -> None:
         tries = 3
@@ -138,21 +138,21 @@ class Fighter(Unit):
                         can_move = True
                 else:
                     can_move = True
-            
+
             best_move = best_moves[randint(0, len(best_moves) - 1)]
             self.x += best_move[0]
             self.y += best_move[1]
             straight_dist = self.get_distance_to_target()
-            self.myworld.turn_log.append(f"{self.name} moved {best_move} to ({self.x},{self.y}) - target {self.target.name} ({self.target.x},{self.target.y}) - new distance {straight_dist}")
+            self.myworld.turn_log.append(f'{self.name} moved {best_move} to ({self.x},{self.y}) - target {self.target.name} ({self.target.x},{self.target.y}) - new distance {straight_dist}')
 
     def do_something(self) -> bool:
         if not self.target or self.target.alive == False:
             if self.pick_closest_target():
                 pass
             else:
-                self.myworld.turn_log.append(f"{self.name} - nothing to target.")
+                self.myworld.turn_log.append(f'{self.name} - nothing to target.')
                 return False
-        
+
         straight_dist = self.get_distance_to_target()
         if straight_dist > self.attack_max_range:
         # if not close enough, move to target
