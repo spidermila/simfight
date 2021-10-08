@@ -1,3 +1,5 @@
+import argparse
+
 from random import randint
 from typing_extensions import runtime
 
@@ -8,11 +10,20 @@ from world import World
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", action='store_true', help="show map")
+    parser.add_argument("-s", action='store_true', help="show turn summary")
+    parser.add_argument("-l", action='store_true', help="show turn log")
+    args = parser.parse_args()
+    show_map = args.m
+    show_summary = args.s
+    show_log = args.l
+
     world = World()
-    group_a = Group("Group A", map_letter="A")
-    group_b = Group("Group B", map_letter="B")
-    group_c = Group("Group C", map_letter="C")
-    group_d = Group("Group D", map_letter="D")
+    group_a = Group("Group A fighters", map_letter="A")
+    group_b = Group("Group B archers", map_letter="B")
+    group_c = Group("Group C fighters", map_letter="C")
+    group_d = Group("Group D archers", map_letter="D")
     world.groups.append(group_a)
     world.groups.append(group_b)
     world.groups.append(group_c)
@@ -49,7 +60,16 @@ def main():
                         fight = True
 
         world.generate_intermediate_summary()
-        world.print_everything()
+        if show_log and show_map and show_summary:
+            world.print_everything()
+        elif show_map and show_summary:
+            world.print_intermediate_summary_w_map()
+        elif show_map and show_log:
+            pass
+        elif show_map:
+            world.print_map()
+        else:
+            world.print_everything()
         world.turn_log = [] # delete the log after printing
         world.turn += 1
         print("Press Enter to continue or q to quit")
