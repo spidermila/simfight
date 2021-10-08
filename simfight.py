@@ -28,9 +28,9 @@ def main():
     world.groups.append(group_b)
     world.groups.append(group_c)
     world.groups.append(group_d)
-    for i in range(70):
+    for i in range(60):
         group_a.members.append(Fighter(name='fighterA' + str(i + 1), mygroup = group_a, myworld = world))
-    for i in range(70):
+    for i in range(60):
         group_b.members.append(Archer(name='archerB' + str(i + 1), mygroup = group_b, myworld = world))
     for i in range(50):
         group_c.members.append(Fighter(name='fighterC' + str(i + 1), mygroup = group_c, myworld = world))
