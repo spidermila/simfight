@@ -20,31 +20,31 @@ def main():
     show_log = args.l
 
     world = World()
-    group_a = Group('Group A elite fighters', map_letter='A')
-    group_b = Group('Group B archers', map_letter='B')
-    group_c = Group('Group C fighters', map_letter='C')
-    group_d = Group('Group D archers', map_letter='D')
+    group_a = Group('Group A elite fighters', map_character='A')
+    group_b = Group('Group B archers', map_character='B')
+    group_c = Group('Group C fighters', map_character='C')
+    group_d = Group('Group D archers', map_character='D')
     world.groups.append(group_a)
     world.groups.append(group_b)
     world.groups.append(group_c)
     world.groups.append(group_d)
-    for i in range(60):
+    for i in range(30):
         group_a.members.append(
             Fighter(
             name='elite fighterA' + str(i + 1),
             accuracy = 95,
-            hp = 50,
+            hp = 40,
             attack_min_damage = 5,
             attack_max_damage = 20,
             mygroup = group_a,
             myworld = world,
             ),
         )
-    for i in range(60):
+    for i in range(50):
         group_b.members.append(Archer(name='archerB' + str(i + 1), mygroup = group_b, myworld = world))
     for i in range(50):
         group_c.members.append(Fighter(name='fighterC' + str(i + 1), mygroup = group_c, myworld = world))
-    for i in range(40):
+    for i in range(50):
         group_d.members.append(Archer(name='archerD' + str(i + 1), mygroup = group_d, myworld = world))
     world.place_units()
 
@@ -87,7 +87,7 @@ def main():
         if a == 'q':
             return
         world.cls()
-    world.print_end_summary()
+    world.print_map()
 
 if __name__ == '__main__':
     raise SystemExit(main())

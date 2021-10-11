@@ -11,8 +11,9 @@ class World:
         self.map: List = []
         self.summary: List = []
         self.turn_log: List = []
-        self.map_corpse_character = ':'
-        self.map_nothing_character = '.'
+        self.short_summary: List = []
+        self.map_corpse_character = '.'
+        self.map_nothing_character = ' '
 
         if sys.platform.find('linux') != -1:
             self.cls_command = 'clear'
@@ -50,17 +51,18 @@ class World:
                     else:
                         for group in self.groups:
                             for member in group.members:
-                                if member.x == col and member.y == row:
+                                if member.x == col and member.y == row and not found:
                                     if member.alive:
-                                        r = r + group.map_letter
+                                        r = r + group.map_character
                                     else:
                                         r = r + self.map_corpse_character
                                     found = True
-                        if found == False:
-                            #TODO fix wrong formatting - x is extending the row
-                            r = r + self.map_nothing_character
+                    if found == False:
+                        r = r + self.map_nothing_character
             self.map.append(r)
 
+    def generate_short_summary(self):
+        self.short_summary = []
         max_name = 0
         max_alive = 0
         max_kills = 0
@@ -76,13 +78,15 @@ class World:
                 max_dead = len(str(group.get_dead_count()))
 
         for group in self.groups:
-            self.map.append(
+            self.short_summary.append(
                 f'{group.name:<{max_name}} | {group.get_dead_count():<{max_dead}} dead | {group.get_alive_count():<{max_alive}} alive | {group.kills:<{max_kills}} kills',
             )
 
     def print_map(self) -> None:
         for o in self.map:
             print(o)
+        for s in self.short_summary:
+            print(s)
 
     def print_start_summary(self) -> None:
         max_name = 0
@@ -99,50 +103,9 @@ class World:
                 print(f'{member.name :<{max_name}} - {member.hp} HP, {member.attack_min_range}-{member.attack_max_range} range, {member.attack_min_damage}-{member.attack_max_damage} damage')
             print('-' * 50)
 
-    def print_end_summary(self) -> None:
-        summary = []
-        loser = ''
-        len_grp = 0
-        len_alive = 0
-        len_total = 0
-        for group in self.groups:
-            total = 0
-            alive = 0
-            for member in group.members:
-                if member.alive:
-                    alive += 1
-                total += 1
-            summary.append(
-                {
-                    'group':group.name,
-                    'total':total,
-                    'alive':alive,
-                },
-            )
-            if alive == 0:
-                loser = group.name
-            if len_grp < len(group.name):
-                len_grp = len(group.name)
-            if len_alive < len(str(alive)):
-                len_alive = len(str(alive))
-            if len_total < len(str(total)):
-                len_total = len(str(total))
-
-        if len_grp < len('Group Name'):
-            len_grp = len('Group Name')
-        if len_alive < len('Alive Units'):
-            len_alive = len('Alive Units')
-        if len_total < len('Total Units'):
-            len_total = len('Total Units')
-
-        print(f'{loser} lost')
-        print()
-        print(f"{'Group Name':<{len_grp}} | {'Total Units':<{len_total}} | {'Alive Units':<{len_alive}}")
-        for i in summary:
-            print(f"{i['group']:<{len_grp}} | {i['total']:<{len_total}} | {i['alive']:<{len_alive}}")
-
     def generate_intermediate_summary(self) -> None:
         self.generate_map()
+        self.generate_short_summary()
         #self.print_map()
         max_name = 0
         self.summary = []

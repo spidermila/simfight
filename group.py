@@ -1,10 +1,10 @@
 from typing import List
 
 class Group:
-    def __init__(self, name, map_letter = 'X') -> None:
+    def __init__(self, name, map_character = 'X') -> None:
         self.name = name
         self.members: List = []
-        self.map_letter = map_letter
+        self.map_character = map_character
         self.kills = 0
 
     def get_alive_count(self) -> int:
