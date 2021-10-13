@@ -1,7 +1,4 @@
 import argparse
-from random import randint
-
-from typing_extensions import runtime
 
 from archer import Archer
 from fighter import Fighter
@@ -31,21 +28,39 @@ def main():
     for i in range(30):
         group_a.members.append(
             Fighter(
-            name='elite fighterA' + str(i + 1),
-            accuracy = 95,
-            hp = 40,
-            attack_min_damage = 5,
-            attack_max_damage = 20,
-            mygroup = group_a,
-            myworld = world,
+                name='elite fighterA' + str(i + 1),
+                accuracy=95,
+                hp=40,
+                attack_min_damage=5,
+                attack_max_damage=20,
+                mygroup=group_a,
+                myworld=world,
             ),
         )
     for i in range(50):
-        group_b.members.append(Archer(name='archerB' + str(i + 1), mygroup = group_b, myworld = world))
+        group_b.members.append(
+            Archer(
+                name='archerB' + str(i + 1),
+                mygroup=group_b,
+                myworld=world,
+            ),
+        )
     for i in range(50):
-        group_c.members.append(Fighter(name='fighterC' + str(i + 1), mygroup = group_c, myworld = world))
+        group_c.members.append(
+            Fighter(
+                name='fighterC' + str(i + 1),
+                mygroup=group_c,
+                myworld=world,
+            ),
+        )
     for i in range(50):
-        group_d.members.append(Archer(name='archerD' + str(i + 1), mygroup = group_d, myworld = world))
+        group_d.members.append(
+            Archer(
+                name='archerD' + str(i + 1),
+                mygroup=group_d,
+                myworld=world,
+            ),
+        )
     world.place_units()
 
     world.cls()
@@ -65,8 +80,8 @@ def main():
         for group in world.groups:
             for m in group.members:
                 if m.alive:
-                    result =  m.do_something()
-                    if result == True:
+                    result = m.do_something()
+                    if result is True:
                         fight = True
 
         world.generate_intermediate_summary()
@@ -80,7 +95,7 @@ def main():
             world.print_map()
         else:
             world.print_everything()
-        world.turn_log = [] # delete the log after printing
+        world.turn_log = []  # delete the log after printing
         world.turn += 1
         print('Press Enter to continue or q to quit')
         a = input()
@@ -88,6 +103,7 @@ def main():
             return
         world.cls()
     world.print_map()
+
 
 if __name__ == '__main__':
     raise SystemExit(main())

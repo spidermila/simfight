@@ -1,7 +1,8 @@
 from typing import List
 
+
 class Group:
-    def __init__(self, name, map_character = 'X') -> None:
+    def __init__(self, name, map_character='X') -> None:
         self.name = name
         self.members: List = []
         self.map_character = map_character
@@ -20,6 +21,6 @@ class Group:
     def get_dead_count(self) -> int:
         dead = 0
         for member in self.members:
-            if member.alive == False:
+            if member.alive is False:
                 dead += 1
         return dead

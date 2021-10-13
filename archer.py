@@ -4,8 +4,9 @@ from typing import Optional
 
 from unit import Unit
 
+
 class Archer(Unit):
-    def __init__(self, *args, name = 'archer', **kwargs) -> None:
+    def __init__(self, *args, name='archer', **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.name = name
         self.hp = 10
@@ -29,10 +30,12 @@ class Archer(Unit):
         candidate_targets = candidates[:]
         while len(candidate_targets) > 0:
             attempt = candidate_targets[randint(0, len(candidate_targets) - 1)]
-            if attempt not in attempted_targets and attempt.alive == True:
+            if attempt not in attempted_targets and attempt.alive is True:
                 self.target = attempt
                 if isinstance(self.target, Unit):
-                    self.myworld.turn_log.append(f'{self.name} targeted {self.target.name}')
+                    self.myworld.turn_log.append(
+                        f'{self.name} targeted {self.target.name}',
+                    )
                     return True
             else:
                 attempted_targets.append(attempt)
@@ -46,13 +49,21 @@ class Archer(Unit):
             straight_dist = self.get_distance_to_target() - 1
             best_move_dst = straight_dist
             for loc in self.surrounding_fields:
-                dst = self.get_distance_to_target_from_xy(self.x + loc[0], self.y + loc[1]) - 1
-                if best_move_dst == dst and self.myworld.square_is_valid(self.x + loc[0], self.y + loc[1]):
+                dst = self.get_distance_to_target_from_xy(
+                    self.x + loc[0],
+                    self.y + loc[1],
+                ) - 1
+                if best_move_dst == dst and self.myworld.square_is_valid(
+                    self.x + loc[0],
+                    self.y + loc[1],
+                ):
                     best_moves.append(loc[:])
-                elif best_move_dst > dst and self.myworld.square_is_valid(self.x + loc[0], self.y + loc[1]):
+                elif best_move_dst > dst and self.myworld.square_is_valid(
+                    self.x + loc[0],
+                    self.y + loc[1],
+                ):
                     best_move_dst = dst
                     best_moves = [loc[:]]
-                #self.myworld.turn_log.append(f"{self.name}({self.x},{self.y}) - {straight_dist=} - ({self.target.x},{self.target.y}) - move {loc} - {dst=}, {best_moves=}")
             if len(best_moves) == 0:
                 # TODO pick a different target
                 self.myworld.turn_log.append(f'{self.name} nowhere to move')
@@ -61,7 +72,12 @@ class Archer(Unit):
                 self.x += best_move[0]
                 self.y += best_move[1]
                 straight_dist = self.get_distance_to_target()
-                self.myworld.turn_log.append(f'{self.name} moved {best_move} to ({self.x},{self.y}) - target {self.target.name} ({self.target.x},{self.target.y}) - new distance {straight_dist}')
+                self.myworld.turn_log.append(
+                    f'{self.name} moved {best_move} to ({self.x},{self.y}) ' +
+                    f'- target {self.target.name} ' +
+                    f'({self.target.x},{self.target.y}) ' +
+                    f'- new distance {straight_dist}',
+                )
 
     def attack(self) -> None:
         if isinstance(self.target, Unit):
@@ -69,27 +85,41 @@ class Archer(Unit):
                 # hit
                 dmg = randint(self.attack_min_damage, self.attack_max_damage)
                 if self.target.hp - dmg <= 0:
-                    self.myworld.turn_log.append(f'{self.name} shooting {self.target.name} ({self.target.hp} HP) - Hit for {dmg} - Target killed')
+                    self.myworld.turn_log.append(
+                        f'{self.name} shooting {self.target.name} ' +
+                        f'({self.target.hp} HP) - Hit for {dmg} ' +
+                        '- Target killed',
+                    )
                     self.target.hp -= dmg
                     self.target.alive = False
                     self.target = None
                     self.mygroup.kills += 1
                 else:
-                    self.myworld.turn_log.append(f'{self.name} shooting {self.target.name} ({self.target.hp} HP) - Hit for {dmg}')
+                    self.myworld.turn_log.append(
+                        f'{self.name} shooting {self.target.name} ' +
+                        f'({self.target.hp} HP) - Hit for {dmg}',
+                    )
                     self.target.hp -= dmg
             else:
-                self.myworld.turn_log.append(f'{self.name} shooting {self.target.name} ({self.target.hp} HP) - Missed')
-
+                self.myworld.turn_log.append(
+                    f'{self.name} shooting {self.target.name} ' +
+                    f'({self.target.hp} HP) - Missed',
+                )
 
     def do_something(self) -> bool:
-        if not self.target or self.target.alive == False:
+        if not self.target or self.target.alive is False:
             if self.pick_random_target():
                 pass
             else:
-                self.myworld.turn_log.append(f'{self.name} - nothing to target.')
+                self.myworld.turn_log.append(
+                    f'{self.name} - nothing to target.',
+                )
                 return False
         straight_dist = self.get_distance_to_target()
-        if straight_dist <= self.attack_max_range and straight_dist >= self.attack_min_range:
+        if (
+            straight_dist <= self.attack_max_range and
+            straight_dist >= self.attack_min_range
+        ):
             self.attack_credit += self.attack_speed
             while self.attack_credit >= 1.0:
                 self.attack_credit -= 1.0
@@ -131,12 +161,18 @@ class Archer(Unit):
                             self.y = goto_y
                     if self.x > self.myworld.x or self.x < 1:
                         self.alive = False
-                        self.myworld.turn_log.append(f'{self.name} out of bounds')
+                        self.myworld.turn_log.append(
+                            f'{self.name} out of bounds',
+                        )
                     else:
-                        self.myworld.turn_log.append(f'{self.name} moved to {self.x},{self.y} - target {self.target.name} at {self.target.x},{self.target.y} - distance {straight_dist}')
+                        self.myworld.turn_log.append(
+                            f'{self.name} moved to {self.x},{self.y} ' +
+                            f'- target {self.target.name} at ' +
+                            f'{self.target.x},{self.target.y} ' +
+                            f'- distance {straight_dist}',
+                        )
         else:
             # if not close enough, move to target
-            # only move this turn, number of fields moved depends on the unit's speed
             for i in range(self.move_speed):
                 straight_dist = self.get_distance_to_target()
                 if straight_dist > self.attack_max_range:

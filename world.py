@@ -3,6 +3,7 @@ import os
 import sys
 from typing import List
 
+
 class World:
     def __init__(self) -> None:
         self.x = 50
@@ -23,17 +24,18 @@ class World:
             self.cls_command = 'clear'
         else:
             print('Unknown OS. cls will not work!')
-            self.cls_command = False # type: ignore
+            self.cls_command = False  # type: ignore
 
     def cls(self) -> None:
-        if self.cls_command: os.system(self.cls_command)
+        if self.cls_command:
+            os.system(self.cls_command)
 
     def longest_list(self, *args) -> list:
         max = 0
-        for l in args:
-            if max < len(l):
-                max = len(l)
-                winner = l
+        for ar in args:
+            if max < len(ar):
+                max = len(ar)
+                winner = ar
         return winner
 
     def generate_map(self) -> None:
@@ -51,13 +53,17 @@ class World:
                     else:
                         for group in self.groups:
                             for member in group.members:
-                                if member.x == col and member.y == row and not found:
+                                if (
+                                    member.x == col and
+                                    member.y == row and
+                                    not found
+                                ):
                                     if member.alive:
                                         r = r + group.map_character
                                     else:
                                         r = r + self.map_corpse_character
                                     found = True
-                    if found == False:
+                    if found is False:
                         r = r + self.map_nothing_character
             self.map.append(r)
 
@@ -79,7 +85,10 @@ class World:
 
         for group in self.groups:
             self.short_summary.append(
-                f'{group.name:<{max_name}} | {group.get_dead_count():<{max_dead}} dead | {group.get_alive_count():<{max_alive}} alive | {group.kills:<{max_kills}} kills',
+                f'{group.name:<{max_name}} ' +
+                f'| {group.get_dead_count():<{max_dead}} dead ' +
+                f'| {group.get_alive_count():<{max_alive}} alive ' +
+                f'| {group.kills:<{max_kills}} kills',
             )
 
     def print_map(self) -> None:
@@ -100,13 +109,19 @@ class World:
         for group in self.groups:
             print(f'Group: {group.name}:')
             for member in group.members:
-                print(f'{member.name :<{max_name}} - {member.hp} HP, {member.attack_min_range}-{member.attack_max_range} range, {member.attack_min_damage}-{member.attack_max_damage} damage')
+                print(
+                    f'{member.name :<{max_name}} - {member.hp} HP' +
+                    f', {member.attack_min_range}-' +
+                    f'{member.attack_max_range} range' +
+                    f', {member.attack_min_damage}-' +
+                    f'{member.attack_max_damage} damage',
+                )
             print('-' * 50)
 
     def generate_intermediate_summary(self) -> None:
         self.generate_map()
         self.generate_short_summary()
-        #self.print_map()
+        # self.print_map()
         max_name = 0
         self.summary = []
         for group in self.groups:
@@ -119,7 +134,9 @@ class World:
                     max_loc = len(f'{member.x}/{member.y}')
                 if member.alive:
                     c += 1
-            self.summary.append(f'--------------- {group.name} -- {c} alive ---------------')
+            self.summary.append(
+                f'--------------- {group.name} -- {c} alive ---------------',
+            )
             for member in group.members:
                 if member.alive:
                     if member.target and member.target.alive:
@@ -127,7 +144,10 @@ class World:
                     else:
                         tgt = 'none'
                     loc = f'{member.x}/{member.y}'
-                    self.summary.append(f'{member.name :<{max_name}} ({loc :<{max_loc}}) - {member.hp} HP - target: {tgt}')
+                    self.summary.append(
+                        f'{member.name :<{max_name}} ({loc :<{max_loc}}) ' +
+                        f'- {member.hp} HP - target: {tgt}',
+                    )
                     c += 1
         self.summary.append('-' * 50)
 
@@ -174,10 +194,13 @@ class World:
                 tmp_map.append(f"{str(''):<{self.x+2}}")
             else:
                 tmp_map.append(self.map[i - (len(winner) - len(self.map))])
-                #self.map.append(f"{str(''):<{self.x+2}}")
+                # self.map.append(f"{str(''):<{self.x+2}}")
         for i, m in enumerate(winner):
-            print(f'{tmp_map[i]:<{max_map_len}} {self.summary[i]:<{max_sum_len}} {self.turn_log[i]:<{max_msg_len}}')
-
+            print(
+                f'{tmp_map[i]:<{max_map_len}} ' +
+                f'{self.summary[i]:<{max_sum_len}} ' +
+                f'{self.turn_log[i]:<{max_msg_len}}',
+            )
 
     def place_units(self) -> None:
         number_of_groups = len(self.groups)
@@ -198,7 +221,10 @@ class World:
                     x_next += 1
                     y_next = y_min
                     if x_next > left_col_x_max:
-                        print(f'Too many units to fit on the map! {row=}, {group.name=}')
+                        print(
+                            'Too many units to fit on the map! ' +
+                            f'{row=}, {group.name=}',
+                        )
                 unit.x = x_next
                 unit.y = y_next
                 y_next += 1
@@ -215,7 +241,10 @@ class World:
                     x_next += 1
                     y_next = y_min
                     if x_next > right_col_x_max:
-                        print(f'Too many units to fit on the map! {row=}, {group.name=}')
+                        print(
+                            'Too many units to fit on the map! ' +
+                            f'{row=}, {group.name=}',
+                        )
                 unit.x = x_next
                 unit.y = y_next
                 y_next += 1
