@@ -25,7 +25,9 @@ def main():
     world.groups.append(group_b)
     world.groups.append(group_c)
     world.groups.append(group_d)
-    for i in range(30):
+    # adding a comment just to test this
+    # nothing special
+    for i in range(70):
         group_a.members.append(
             Fighter(
                 name='elite fighterA' + str(i + 1),
@@ -37,7 +39,7 @@ def main():
                 myworld=world,
             ),
         )
-    for i in range(50):
+    for i in range(90):
         group_b.members.append(
             Archer(
                 name='archerB' + str(i + 1),
@@ -45,7 +47,7 @@ def main():
                 myworld=world,
             ),
         )
-    for i in range(50):
+    for i in range(100):
         group_c.members.append(
             Fighter(
                 name='fighterC' + str(i + 1),
@@ -53,7 +55,7 @@ def main():
                 myworld=world,
             ),
         )
-    for i in range(50):
+    for i in range(150):
         group_d.members.append(
             Archer(
                 name='archerD' + str(i + 1),
