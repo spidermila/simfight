@@ -187,11 +187,11 @@ class World:
         tmp_map = []
         for i in range(len(winner)):
             if i >= len(self.turn_log):
-                self.turn_log.append(f"{str(''):<{max_msg_len}}")
+                self.turn_log.append(f"{'':<{max_msg_len}}")
             if i >= len(self.summary):
-                self.summary.append(f"{str(''):<{max_sum_len}}")
+                self.summary.append(f"{'':<{max_sum_len}}")
             if i < len(winner) - len(self.map):
-                tmp_map.append(f"{str(''):<{self.x+2}}")
+                tmp_map.append(f"{'':<{self.x+2}}")
             else:
                 tmp_map.append(self.map[i - (len(winner) - len(self.map))])
                 # self.map.append(f"{str(''):<{self.x+2}}")
