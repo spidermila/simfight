@@ -110,7 +110,7 @@ class World:
             print(f'Group: {group.name}:')
             for member in group.members:
                 print(
-                    f'{member.name :<{max_name}} - {member.hp} HP' +
+                    f'{member.name:<{max_name}} - {member.hp} HP' +
                     f', {member.attack_min_range}-' +
                     f'{member.attack_max_range} range' +
                     f', {member.attack_min_damage}-' +
@@ -145,7 +145,7 @@ class World:
                         tgt = 'none'
                     loc = f'{member.x}/{member.y}'
                     self.summary.append(
-                        f'{member.name :<{max_name}} ({loc :<{max_loc}}) ' +
+                        f'{member.name:<{max_name}} ({loc:<{max_loc}}) ' +
                         f'- {member.hp} HP - target: {tgt}',
                     )
                     c += 1
